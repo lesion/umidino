@@ -23,7 +23,7 @@ dht11 DHT11;
 
 // wait minimum this ms until each status
 // change to avoid toggle relay too fast
-#define CHANGE_DELAY 1000
+#define CHANGE_DELAY 10000
 
 #define MIN_TEMP 20
 #define MAX_TEMP 30
@@ -91,6 +91,7 @@ void setup() {
   last_change=millis();
 }
 
+int status = false;
 
 void loop() {
 
@@ -122,6 +123,10 @@ void loop() {
   print_data(chk);
   if(chk!=DHTLIB_OK)
     return;
+  if(status)
+    lcd.print("  On");
+  else
+    lcd.print("  Off");
 
   if(millis()-last_change>CHANGE_DELAY)
   {
@@ -129,15 +134,15 @@ void loop() {
     if(DHT11.temperature<goal_temperature)
     {
       digitalWrite(RELAY_PIN,LOW);
-      lcd.print("  On");
+      status=true;
     }
     else
     {
       digitalWrite(RELAY_PIN,HIGH);
-      lcd.print("  Off");
+      status=false;
     }
   }
 
-  delay(200);
+  delay(500);
 }
 
